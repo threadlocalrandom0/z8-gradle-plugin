@@ -2,8 +2,10 @@ package org.zenframework.z8.gradle.js
 
 import org.gradle.api.file.ConfigurableFileTree
 import org.gradle.api.file.RegularFileProperty
-import org.gradle.api.provider.Property
-import org.gradle.api.tasks.*
+import org.gradle.api.tasks.InputDirectory
+import org.gradle.api.tasks.OutputFile
+import org.gradle.api.tasks.SkipWhenEmpty
+import org.gradle.api.tasks.TaskAction
 import org.zenframework.z8.gradle.base.ArtifactDependentTask
 
 import javax.xml.parsers.DocumentBuilderFactory
@@ -41,14 +43,7 @@ class EmbedSvgTask extends ArtifactDependentTask {
                     document.normalizeDocument()
                     def writer = new StringWriter()
                     transformer.transform(new DOMSource(document), new StreamResult(writer))
-                    def encoded = URLEncoder.encode(writer.toString(), StandardCharsets.UTF_8.toString())
-                            .replaceAll("\\+", "%20")
-                            .replaceAll("%21", "!")
-                            .replaceAll("%27", "'")
-                            .replaceAll("%28", "(")
-                            .replaceAll("%29", ")")
-                            .replaceAll("%7E", "~")
-                    fw.write(encoded)
+                    fw.write(urlEncode(writer.toString()))
                     fw.write("');\n}\n\n")
                 }
             }
@@ -56,4 +51,13 @@ class EmbedSvgTask extends ArtifactDependentTask {
         }
     }
 
+    private static def urlEncode(String string) {
+        return URLEncoder.encode(string, StandardCharsets.UTF_8.toString())
+                .replaceAll("\\+", "%20")
+                .replaceAll("%21", "!")
+                .replaceAll("%27", "'")
+                .replaceAll("%28", "(")
+                .replaceAll("%29", ")")
+                .replaceAll("%7E", "~")
+    }
 }
