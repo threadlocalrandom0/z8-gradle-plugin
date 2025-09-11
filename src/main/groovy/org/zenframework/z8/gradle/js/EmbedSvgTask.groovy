@@ -19,45 +19,45 @@ import java.util.stream.IntStream
 
 class EmbedSvgTask extends ArtifactDependentTask {
 
-    @SkipWhenEmpty @InputDirectory final ConfigurableFileTree source = project.objects.fileTree()
-    @OutputFile final RegularFileProperty output = project.objects.fileProperty()
+	@SkipWhenEmpty @InputDirectory final ConfigurableFileTree source = project.objects.fileTree()
+	@OutputFile final RegularFileProperty output = project.objects.fileProperty()
 
-    @TaskAction
-    def run() {
-        new FileWriter(this.output.asFile.get()).withCloseable { fw ->
-            def db = DocumentBuilderFactory.newInstance().newDocumentBuilder()
-            def transformer = TransformerFactory.newInstance().newTransformer()
-            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes")
+	@TaskAction
+	def run() {
+		new FileWriter(this.output.asFile.get()).withCloseable { fw ->
+			def db = DocumentBuilderFactory.newInstance().newDocumentBuilder()
+			def transformer = TransformerFactory.newInstance().newTransformer()
+			transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes")
 
-            this.source.forEach { source ->
-                def f = this.source.dir.toPath().relativize(source.toPath())
-                if (f.getFileName().toString().endsWith(".svg")) {
-                    def name = IntStream.range(0, f.nameCount)
-                            .mapToObj { f.getName(it).toString() }
-                            .collect(Collectors.joining("-"))
-                            .with { it.substring(0, it.length() - 4) } // убрать .svg
-                    fw.write(".${project.name}-icon-${name} {\n")
-                    fw.write("    background-image: url('data:image/svg+xml,")
+			this.source.forEach { source ->
+				def f = this.source.dir.toPath().relativize(source.toPath())
+				if (f.getFileName().toString().endsWith(".svg")) {
+					def name = IntStream.range(0, f.nameCount)
+							.mapToObj { f.getName(it).toString() }
+							.collect(Collectors.joining("-"))
+							.with { it.substring(0, it.length() - 4) } // убрать .svg
+					fw.write(".${project.name}-icon-${name} {\n")
+					fw.write("	background-image: url('data:image/svg+xml,")
 
-                    def document = db.parse(source)
-                    document.normalizeDocument()
-                    def writer = new StringWriter()
-                    transformer.transform(new DOMSource(document), new StreamResult(writer))
-                    fw.write(urlEncode(writer.toString()))
-                    fw.write("');\n}\n\n")
-                }
-            }
-            fw.flush()
-        }
-    }
+					def document = db.parse(source)
+					document.normalizeDocument()
+					def writer = new StringWriter()
+					transformer.transform(new DOMSource(document), new StreamResult(writer))
+					fw.write(urlEncode(writer.toString()))
+					fw.write("');\n}\n\n")
+				}
+			}
+			fw.flush()
+		}
+	}
 
-    private static def urlEncode(String string) {
-        return URLEncoder.encode(string, StandardCharsets.UTF_8.toString())
-                .replaceAll("\\+", "%20")
-                .replaceAll("%21", "!")
-                .replaceAll("%27", "'")
-                .replaceAll("%28", "(")
-                .replaceAll("%29", ")")
-                .replaceAll("%7E", "~")
-    }
+	private static def urlEncode(String string) {
+		return URLEncoder.encode(string, StandardCharsets.UTF_8.toString())
+				.replaceAll("\\+", "%20")
+				.replaceAll("%21", "!")
+				.replaceAll("%27", "'")
+				.replaceAll("%28", "(")
+				.replaceAll("%29", ")")
+				.replaceAll("%7E", "~")
+	}
 }
