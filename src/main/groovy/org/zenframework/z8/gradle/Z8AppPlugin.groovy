@@ -22,6 +22,8 @@ class Z8AppPlugin implements Plugin<Project> {
 		if (!project.hasProperty('z8DependenciesVersion'))
 			project.allprojects.ext.z8DependenciesVersion = '4.1'
 
+		project.ext.buildTimestamp = new Date().time
+
 		project.configurations {
 			boot
 			resources {

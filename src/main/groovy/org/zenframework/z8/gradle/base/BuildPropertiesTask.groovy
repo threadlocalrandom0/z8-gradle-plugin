@@ -11,7 +11,9 @@ import org.gradle.api.tasks.TaskAction
 
 class BuildPropertiesTask extends DefaultTask {
 
+	@Input long buildTimestamp = 0L
 	@OutputFile final RegularFileProperty output = project.objects.fileProperty()
+
 	private final additionalArtifacts = []
 
 	public additionalConfiguration(Configuration... additionalConfigurations) {
@@ -43,6 +45,6 @@ class BuildPropertiesTask extends DefaultTask {
 	def run() {
 		def modules = project.subprojects.collect { "${it.name}.version=${it.version}" }.sort()
 		def additional = additionalArtifacts.sort()
-		output.asFile.get().text = '# Application\n' + "${project.name}.version=${project.version}" + '\n\n# Modules\n' + modules.join('\n') + '\n\n# Framework\n' + additional.join('\n')
+		output.asFile.get().text = '# Application\n' + "${project.name}.version=${project.version}" + "\nbuild.timestamp=${project.buildTimestamp}" + '\n\n# Modules\n' + modules.join('\n') + '\n\n# Framework\n' + additional.join('\n')
 	}
 }
