@@ -18,6 +18,8 @@ class Z8BasePlugin implements Plugin<Project> {
 			project.ext.resolveGroups = [ project.group ]
 		if (!project.hasProperty('z8DependenciesVersion'))
 			project.ext.z8DependenciesVersion = '4.1'
+		if (!project.hasProperty('z8ToolsVersion'))
+			project.ext.z8ToolsVersion = '4.1'
 	
 		project.configurations {
 			z8

@@ -16,7 +16,7 @@ class Z8JsBasePlugin implements Plugin<Project> {
 	void apply(Project project) {
 		project.pluginManager.apply(BasePlugin.class)
 		project.pluginManager.apply(Z8BasePlugin.class)
-
+	
 		project.configurations {
 			jstools
 			webcompile {
@@ -28,8 +28,8 @@ class Z8JsBasePlugin implements Plugin<Project> {
 		}
 
 		project.dependencies {
-			jstools 'org.zenframework.z8.dependencies.tools:closure-compiler-v20180805:4.0'
-			jstools 'org.zenframework.z8.dependencies.tools:yuicompressor:4.0'
+			jstools "org.zenframework.z8.dependencies.tools:closure-compiler:${project.z8ToolsVersion}"
+			jstools "org.zenframework.z8.dependencies.tools:yuicompressor:${project.z8ToolsVersion}"
 		}
 
 		project.tasks.register('compileSass', CompileSassTask) {
@@ -104,5 +104,4 @@ class Z8JsBasePlugin implements Plugin<Project> {
 			dependsOn project.tasks.concatCss, project.tasks.concatJs, project.tasks.concatTestJs, project.tasks.collectJsResources
 		}
 	}
-
 }
